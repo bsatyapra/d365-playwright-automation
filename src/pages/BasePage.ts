@@ -33,7 +33,26 @@ export class BasePage {
   }
 
   async navigateToArea(area: string, subArea: string): Promise<void> {
-    await this.page.locator('[data-id="navbar-main"]').waitFor({ state: 'visible' });
+    // Navigate to D365 first if we're not already there
+    if (!this.page.url().includes('dynamics.com')) {
+      await this.page.goto(process.env.D365_URL!);
+      await this.page.waitForLoadState('domcontentloaded');
+      await this.waitForSpinner(30000);
+    }
+
+    // App picker may appear before navbar — click the matching app tile if visible
+    const navbar = this.page.locator('[data-id="navbar-main"]');
+    if (!(await navbar.isVisible({ timeout: 5000 }).catch(() => false))) {
+      const appTile = this.page
+        .locator(`[title*="${area}"], [aria-label*="${area}"], [data-id*="${area}"]`)
+        .first();
+      if (await appTile.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await appTile.click();
+        await this.waitForSpinner(30000);
+      }
+    }
+
+    await navbar.waitFor({ state: 'visible', timeout: 45000 });
     const switcher = this.page.locator('[data-id="areaSwitcherId"], button[data-id="sitemap-top-area-launcher"]');
     if (await switcher.isVisible({ timeout: 3000 }).catch(() => false)) {
       await switcher.click();

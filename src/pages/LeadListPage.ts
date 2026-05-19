@@ -5,8 +5,12 @@ export class LeadListPage extends BasePage {
   private readonly gridContainer = '[data-id="entity_control-pcf_grid_control_container"]';
 
   async navigateToLeads(): Promise<void> {
-    await this.navigateToArea('Sales', 'Leads');
-    await this.page.locator(this.gridContainer).waitFor({ state: 'visible' });
+    // Navigate directly to the Leads entity list — avoids app picker / navbar race
+    const d365Url = process.env.D365_URL!.replace(/\/$/, '');
+    await this.page.goto(`${d365Url}/main.aspx?pagetype=entitylist&etn=lead`);
+    await this.page.waitForLoadState('domcontentloaded');
+    await this.waitForSpinner(60000);
+    await this.page.locator(this.gridContainer).waitFor({ state: 'visible', timeout: 60000 });
   }
 
   async clickNewLead(): Promise<void> {

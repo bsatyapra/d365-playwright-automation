@@ -18,7 +18,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
   const authDir = path.join(process.cwd(), 'auth');
   fs.mkdirSync(authDir, { recursive: true });
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: false, slowMo: 200 });
   const context = await browser.newContext();
   const page = await context.newPage();
 
