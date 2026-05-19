@@ -18,6 +18,14 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
   const authDir = path.join(process.cwd(), 'auth');
   fs.mkdirSync(authDir, { recursive: true });
 
+  const storageStatePath = path.join(authDir, 'storageState.json');
+
+  // Skip re-login if session file already exists — delete auth/storageState.json to force re-auth
+  if (fs.existsSync(storageStatePath)) {
+    console.log('✓ storageState exists — skipping login (delete auth/storageState.json to re-authenticate)');
+    return;
+  }
+
   const browser = await chromium.launch({ headless: false, slowMo: 200 });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -26,7 +34,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
   await loginPage.navigate(d365Url);
   await loginPage.completeAADLogin(username, password);
 
-  await context.storageState({ path: path.join(authDir, 'storageState.json') });
+  await context.storageState({ path: storageStatePath });
   await browser.close();
 
   console.log('✓ D365 authentication complete — storageState saved');
