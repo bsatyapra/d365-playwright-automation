@@ -57,12 +57,12 @@ async function main(): Promise<void> {
     caseMap[tc.id] = { adoWorkItemId: workItemId, title: tc.title };
     console.log(`  ✓ ${tc.id} → WI #${workItemId}`);
 
-    // Add to suite
+    // Add to suite — TestPlanApi expects (params[], project, planId, suiteId)
     await testPlanApi.addTestCasesToSuite(
+      [{ workItem: { id: workItemId } }],
       config.adoProject,
       config.adoPlanId,
-      config.adoSuiteId,
-      workItemId.toString()
+      config.adoSuiteId
     );
 
     await sleep(500);

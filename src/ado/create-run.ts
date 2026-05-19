@@ -18,11 +18,10 @@ async function main(): Promise<void> {
   const run = await testApi.createTestRun(
     {
       name: `D365 Lead Management — Automated Run ${new Date().toISOString()}`,
-      plan: { id: config.adoPlanId },
-      isAutomated: true,
+      plan: { id: String(config.adoPlanId) },
+      automated: true,
       state: 'InProgress',
-      buildPlatform: 'Any',
-      buildFlavor: 'Release',
+      configurationIds: [],
     },
     config.adoProject
   );
@@ -38,8 +37,11 @@ async function main(): Promise<void> {
 
   const pointByWorkItemId = new Map<number, number>();
   for (const point of points) {
-    if (point.testCase?.id && point.id) {
-      pointByWorkItemId.set(Number(point.testCase.id), point.id);
+    // Property name differs between TestPlanInterfaces versions (testCase vs testCaseReference)
+    const p = point as any;
+    const wiId = p.testCase?.id ?? p.testCaseReference?.id;
+    if (wiId && point.id) {
+      pointByWorkItemId.set(Number(wiId), point.id);
     }
   }
 

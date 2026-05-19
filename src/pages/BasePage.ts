@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 
 export class BasePage {
-  constructor(protected readonly page: Page) {}
+  constructor(readonly page: Page) {}
 
   async waitForSpinner(timeout = 45000): Promise<void> {
     const spinners = [
