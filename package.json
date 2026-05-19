@@ -1,0 +1,29 @@
+{
+  "name": "d365-playwright",
+  "version": "1.0.0",
+  "description": "D365 Lead Management Playwright automation with Azure DevOps integration",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "upload-cases": "ts-node src/ado/upload-test-cases.ts",
+    "create-run": "ts-node src/ado/create-run.ts",
+    "update-results": "ts-node src/ado/update-results.ts",
+    "close-run": "ts-node src/ado/close-run.ts",
+    "report": "allure generate results/allure-results --clean -o results/allure-report && allure open results/allure-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.0.0",
+    "allure-playwright": "^3.0.0",
+    "allure-js-commons": "^3.0.0",
+    "allure-commandline": "^2.29.0",
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "azure-devops-node-api": "^12.5.0",
+    "dotenv": "^16.4.0"
+  }
+}

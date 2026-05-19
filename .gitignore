@@ -1,0 +1,23 @@
+node_modules/
+dist/
+
+# Secrets
+.env
+auth/storageState.json
+
+# Test artifacts (gitignored — generated on each run)
+results/allure-results/
+results/allure-report/
+results/playwright-report/
+results/artifacts/
+results/screenshots/
+results/videos/
+
+# ADO run state files (generated per run)
+results/run-context.json
+results/playwright-outcomes.json
+results/ado-case-map.json
+
+# OS
+.DS_Store
+Thumbs.db
