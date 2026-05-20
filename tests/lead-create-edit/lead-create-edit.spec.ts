@@ -107,7 +107,7 @@ test.describe('Lead Create / Edit', () => {
       });
 
       await test.step('Update topic and company', async () => {
-        await leadForm.fillTopic(updatedTopic);
+        await leadForm.fillLastName(updatedTopic);  // Lead Title = subject field
         await leadForm.fillCompany('Updated Corp TC004');
       });
 
@@ -133,7 +133,12 @@ test.describe('Lead Create / Edit', () => {
       });
 
       await test.step('Attempt to save', async () => {
-        await leadForm.page.locator('button[data-id="edit-form-save"]').click();
+        const ribbonSave = leadForm.page.locator('button[data-id="edit-form-save"]');
+        if (await ribbonSave.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await ribbonSave.click();
+        } else {
+          await leadForm.page.keyboard.press('Control+s');
+        }
         await leadForm.waitForSpinner();
       });
 

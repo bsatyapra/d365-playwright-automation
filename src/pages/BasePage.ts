@@ -23,12 +23,25 @@ export class BasePage {
   }
 
   async saveForm(): Promise<void> {
-    await this.page.locator('button[data-id="edit-form-save"]').click();
+    // Ctrl+S works in both in-app and no-app D365 contexts; ribbon button is a bonus
+    const ribbonSave = this.page.locator('button[data-id="edit-form-save"]');
+    if (await ribbonSave.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await ribbonSave.click();
+    } else {
+      await this.page.keyboard.press('Control+s');
+    }
     await this.waitForSpinner();
+    // Check top-level notification banner first
     const errorBanner = this.page.locator('[data-id="errorNotificationContainer"]');
     if (await errorBanner.isVisible({ timeout: 2000 }).catch(() => false)) {
       const msg = await errorBanner.textContent();
       throw new Error(`D365 save error: ${msg}`);
+    }
+    // Also check for inline field-validation message bar (appears when required fields are empty)
+    const inlineError = this.page.locator('.ms-MessageBar--error, [class*="NotificationBarControl"]');
+    if (await inlineError.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+      const msg = await inlineError.first().textContent();
+      throw new Error(`D365 validation error: ${msg}`);
     }
   }
 

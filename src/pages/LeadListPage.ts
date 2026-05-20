@@ -26,8 +26,12 @@ export class LeadListPage extends BasePage {
   }
 
   async searchLead(searchText: string): Promise<boolean> {
+    // D365 no-app context uses placeholder "Filter by keyword"; in-app uses quickFind data-id
     const searchBox = this.page
-      .locator('[data-id="quickFind"], input[aria-label="Search"], input[aria-label="Filter by keyword"]')
+      .locator(
+        '[data-id="quickFind"], input[aria-label="Search"], input[aria-label="Filter by keyword"], ' +
+        'input[placeholder*="Filter"], input[placeholder*="keyword"], input[placeholder*="Search"]'
+      )
       .first();
     await searchBox.fill(searchText);
     await searchBox.press('Enter');
